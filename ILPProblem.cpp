@@ -93,21 +93,6 @@ void ILPProblem::createMappingConstraints_()
 
 	rmatbeg[++cur_constr] = cur_index;
 
-#ifndef NDEBUG
-	std::cout << "indices: ";
-	std::copy(indices.begin(), indices.end(),
-	          std::ostream_iterator<int>(std::cout, ", "));
-	std::cout << '\n';
-	std::cout << "weights: ";
-	std::copy(row.begin(), row.end(),
-	          std::ostream_iterator<double>(std::cout, ", "));
-	std::cout << '\n';
-	std::cout << "constr ptr: ";
-	std::copy(rmatbeg.begin(), rmatbeg.end(),
-	          std::ostream_iterator<double>(std::cout, ", "));
-	std::cout << '\n';
-#endif
-
 	int status = CPXaddrows(env_, lp_, 0, num_constr, num_indices, &rhs[0],
 	                        &sense[0], &rmatbeg[0], &indices[0], &row[0], 0, 0);
 

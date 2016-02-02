@@ -20,11 +20,6 @@
 
 #include <algorithm>
 
-#ifndef NDEBUG
-#include <iterator>
-#include <iostream>
-#endif
-
 MinMaxProblem::MinMaxProblem(const TargetMappings& mappings,
                              double mirna_weight, double gene_weight)
     : ILPProblem(mappings),
