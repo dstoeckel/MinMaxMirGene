@@ -150,22 +150,23 @@ int maxGeneCurve(int argc, char* argv[], TargetMappings& mappings)
 	printILPStatistics(problem);
 
 	std::size_t i = 1;
-	for(; i < mappings.numMirnas(); ++i) {
+	for(; i <= mappings.numMirnas(); ++i) {
 		std::cout << "\rProcessing " << i << "/" << mappings.numMirnas();
 		std::cout.flush();
 		problem.setNumMirna(i);
 		auto result = problem.solve();
 
-		if(result.second.size() == mappings.numGenes()) {
-			std::cout << "\nCovered all genes in the network. Exiting early.";
+		curve << i << '\t' << result.second.size() << '\n';
+
+		if(result.second.size() == mappings.numGenes() && i != mappings.numMirnas()) {
+			std::cout << "\nCovered all available target genes. Exiting early.";
 			break;
 		}
-		curve << i << '\t' << result.second.size() << '\n';
 	}
 
 	std::cout << '\n';
 
-	for(; i < mappings.numMirnas(); ++i) {
+	for(++i; i <= mappings.numMirnas(); ++i) {
 		curve << i << '\t' << mappings.numGenes() << '\n';
 	}
 
