@@ -6,11 +6,16 @@ SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 set(SOURCES
 	main.cpp
+	ILPProblem.cpp
+	MaxGeneProblem.cpp
 	MinMaxProblem.cpp
 	TargetMappings.cpp
 )
 
 set(HEADERS
+	CPLEXException.h
+	ILPProblem.h
+	MaxGeneProblem.h
 	MinMaxProblem.h
 	TargetMappings.h
 )

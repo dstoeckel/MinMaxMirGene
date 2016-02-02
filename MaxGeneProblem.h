@@ -15,28 +15,27 @@
  * You should have received a copy of the GNU General Public License
  * along with MinMaxMirnaGene. If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef MINMAXPROBLEM_H
-#define MINMAXPROBLEM_H
+#ifndef MAXGENEPROBLEM_H
+#define MAXGENEPROBLEM_H
 
 #include "ILPProblem.h"
 
-#include <string>
-#include <vector>
-
-class MinMaxProblem : public ILPProblem
+class MaxGeneProblem : public ILPProblem
 {
   public:
-	MinMaxProblem(const TargetMappings& mappings, double mirna_weight,
-	              double gene_weight);
-	MinMaxProblem(TargetMappings&& mappings, double mirna_weight,
-	              double gene_weight);
+	explicit MaxGeneProblem(const TargetMappings& mappings,
+	                        std::size_t num_mirnas);
+	explicit MaxGeneProblem(TargetMappings&& mappings, std::size_t num_mirnas);
 
-  private:
+	void setNumMirna(std::size_t k);
+
+  protected:
 	virtual void createObjectiveFunction_();
 	virtual void createConstraints_();
+	void createNumMirnaConstraint_();
 
-	double mirna_weight_;
-	double gene_weight_;
+  private:
+	size_t num_mirnas_;
 };
 
-#endif // MINMAXPROBLEM_H
+#endif // MAXGENEPROBLEM_H

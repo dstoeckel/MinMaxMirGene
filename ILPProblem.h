@@ -15,28 +15,41 @@
  * You should have received a copy of the GNU General Public License
  * along with MinMaxMirnaGene. If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef MINMAXPROBLEM_H
-#define MINMAXPROBLEM_H
+#ifndef ILPPROBLEM_H
+#define ILPPROBLEM_H
 
-#include "ILPProblem.h"
+#include "TargetMappings.h"
 
-#include <string>
+#include <ilcplex/cplex.h>
+
 #include <vector>
+#include <utility>
 
-class MinMaxProblem : public ILPProblem
+class ILPProblem
 {
   public:
-	MinMaxProblem(const TargetMappings& mappings, double mirna_weight,
-	              double gene_weight);
-	MinMaxProblem(TargetMappings&& mappings, double mirna_weight,
-	              double gene_weight);
+	using Result =
+	    std::pair<std::vector<std::string>, std::vector<std::string>>;
+	explicit ILPProblem(const TargetMappings& mappings);
+	explicit ILPProblem(TargetMappings&& mappings);
 
-  private:
-	virtual void createObjectiveFunction_();
-	virtual void createConstraints_();
+	std::size_t numVariables() const;
+	std::size_t numConstraints() const;
+	std::size_t numNonZero() const;
 
-	double mirna_weight_;
-	double gene_weight_;
+	virtual Result solve();
+
+  protected:
+	TargetMappings mappings_;
+	CPXENVptr env_;
+	CPXLPptr lp_;
+
+	virtual void createProblem_();
+	virtual void createObjectiveFunction_() = 0;
+	virtual void createConstraints_() = 0;
+
+	void createMappingConstraints_();
+	void handleCPLEXError_(int status);
 };
 
-#endif // MINMAXPROBLEM_H
+#endif // ILPPROBLEM_H

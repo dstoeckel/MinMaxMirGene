@@ -15,28 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with MinMaxMirnaGene. If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef MINMAXPROBLEM_H
-#define MINMAXPROBLEM_H
+#ifndef MINMAX_CPLEXEXCEPTION_H
+#define MINMAX_CPLEXEXCEPTION_H
 
-#include "ILPProblem.h"
+#include <stdexcept>
 
-#include <string>
-#include <vector>
-
-class MinMaxProblem : public ILPProblem
+class CPLEXException : public std::exception
 {
   public:
-	MinMaxProblem(const TargetMappings& mappings, double mirna_weight,
-	              double gene_weight);
-	MinMaxProblem(TargetMappings&& mappings, double mirna_weight,
-	              double gene_weight);
+	CPLEXException(const char* msg) throw() : what_(msg) {}
+	~CPLEXException() throw(){};
+	const char* what() const throw() { return what_.c_str(); }
 
   private:
-	virtual void createObjectiveFunction_();
-	virtual void createConstraints_();
-
-	double mirna_weight_;
-	double gene_weight_;
+	std::string what_;
 };
 
-#endif // MINMAXPROBLEM_H
+#endif // MINMAX_CPLEXEXCEPTION_H

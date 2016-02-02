@@ -15,47 +15,45 @@
  * You should have received a copy of the GNU General Public License
  * along with MinMaxMirnaGene. If not, see <http://www.gnu.org/licenses/>.
  */
-#include "MinMaxProblem.h"
-#include "CPLEXException.h"
+#include "MaxGeneProblem.h"
 
+#include <array>
 #include <algorithm>
 
-#ifndef NDEBUG
-#include <iterator>
-#include <iostream>
-#endif
-
-MinMaxProblem::MinMaxProblem(const TargetMappings& mappings,
-                             double mirna_weight, double gene_weight)
-    : ILPProblem(mappings),
-      mirna_weight_(mirna_weight),
-      gene_weight_(gene_weight)
+MaxGeneProblem::MaxGeneProblem(const TargetMappings& mappings,
+                               std::size_t num_mirnas)
+    : ILPProblem(mappings), num_mirnas_(num_mirnas)
 {
 	createProblem_();
 }
 
-MinMaxProblem::MinMaxProblem(TargetMappings&& mappings, double mirna_weight,
-                             double gene_weight)
-    : ILPProblem(std::move(mappings)),
-      mirna_weight_(mirna_weight),
-      gene_weight_(gene_weight)
+MaxGeneProblem::MaxGeneProblem(TargetMappings&& mappings,
+                               std::size_t num_mirnas)
+    : ILPProblem(std::move(mappings)), num_mirnas_(num_mirnas)
 {
 	createProblem_();
 }
 
-void MinMaxProblem::createObjectiveFunction_()
+void MaxGeneProblem::setNumMirna(size_t k)
+{
+	const int idx = 0;
+	const double value = k;
+	handleCPLEXError_(CPXchgrhs(env_, lp_, 1, &idx, &value));
+}
+
+void MaxGeneProblem::createObjectiveFunction_()
 {
 	const std::size_t nvar = mappings_.numGenes() + mappings_.numMirnas();
 
 	CPXchgobjsen(env_, lp_, CPX_MAX);
 	std::vector<int> indices(nvar);
 	std::vector<char> ctype(nvar, 'B');
-	std::vector<double> row(nvar, gene_weight_);
+	std::vector<double> row(nvar, 1.0);
 	std::vector<double> lb(nvar, 0.0);
 	std::vector<double> ub(nvar, 1.0);
 
 	std::iota(indices.begin(), indices.end(), 0);
-	std::fill_n(row.begin(), mappings_.numMirnas(), -mirna_weight_);
+	std::fill_n(row.begin(), mappings_.numMirnas(), 0.0);
 
 	int status = CPXnewcols(env_, lp_, nvar, &row[0], &lb[0], &ub[0], 0, 0);
 	handleCPLEXError_(status);
@@ -64,4 +62,26 @@ void MinMaxProblem::createObjectiveFunction_()
 	handleCPLEXError_(status);
 }
 
-void MinMaxProblem::createConstraints_() { createMappingConstraints_(); }
+void MaxGeneProblem::createConstraints_()
+{
+	createNumMirnaConstraint_();
+	createMappingConstraints_();
+}
+
+void MaxGeneProblem::createNumMirnaConstraint_()
+{
+	const std::size_t nvar = mappings_.numMirnas();
+
+	const char sense = 'E';
+	const double rhs = num_mirnas_;
+	std::vector<int> indices(nvar);
+	std::vector<double> row(nvar);
+	std::array<int, 2> rmatbeg = {0, static_cast<int>(nvar)};
+
+	std::iota(indices.begin(), indices.end(), 0);
+	std::fill(row.begin(), row.end(), 1.0);
+
+	int status = CPXaddrows(env_, lp_, 0, 1, nvar, &rhs, &sense, &rmatbeg[0],
+	                        &indices[0], &row[0], 0, 0);
+	handleCPLEXError_(status);
+}
