@@ -19,6 +19,19 @@
 
 #include "CPLEXException.h"
 
+#include <cassert>
+
+ILPProblem::~ILPProblem()
+{
+	if(lp_) {
+		CPXfreeprob(env_, &lp_);
+	}
+
+	if(env_) {
+		CPXcloseCPLEX(&env_);
+	}
+}
+
 void ILPProblem::handleCPLEXError_(int status)
 {
 	if(status) {
@@ -34,10 +47,10 @@ void ILPProblem::handleCPLEXError_(int status)
 	}
 }
 
-ILPProblem::ILPProblem(const TargetMappings& mappings) : mappings_(mappings) {}
+ILPProblem::ILPProblem(const TargetMappings& mappings) : mappings_(mappings), env_(nullptr), lp_(nullptr) {}
 
 ILPProblem::ILPProblem(TargetMappings&& mappings)
-    : mappings_(std::move(mappings))
+    : mappings_(std::move(mappings)), env_(nullptr), lp_(nullptr)
 {
 }
 

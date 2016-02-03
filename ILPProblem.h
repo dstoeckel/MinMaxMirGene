@@ -33,6 +33,8 @@ class ILPProblem
 	explicit ILPProblem(const TargetMappings& mappings);
 	explicit ILPProblem(TargetMappings&& mappings);
 
+	~ILPProblem();
+
 	std::size_t numVariables() const;
 	std::size_t numConstraints() const;
 	std::size_t numNonZero() const;
