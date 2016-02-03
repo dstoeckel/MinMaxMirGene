@@ -42,20 +42,15 @@ void MinMaxProblem::createObjectiveFunction_()
 {
 	const std::size_t nvar = mappings_.numGenes() + mappings_.numMirnas();
 
-	CPXchgobjsen(env_, lp_, CPX_MAX);
-	std::vector<int> indices(nvar);
-	std::vector<char> ctype(nvar, 'B');
-	std::vector<double> row(nvar, gene_weight_);
-	std::vector<double> lb(nvar, 0.0);
-	std::vector<double> ub(nvar, 1.0);
-
-	std::iota(indices.begin(), indices.end(), 0);
-	std::fill_n(row.begin(), mappings_.numMirnas(), -mirna_weight_);
-
-	int status = CPXnewcols(env_, lp_, nvar, &row[0], &lb[0], &ub[0], 0, 0);
+	int status = CPXchgobjsen(env_, lp_, CPX_MAX);
 	handleCPLEXError_(status);
 
-	status = CPXchgctype(env_, lp_, indices.size(), &indices[0], &ctype[0]);
+	std::vector<char> ctype(nvar, 'B');
+	std::vector<double> row(nvar, gene_weight_);
+
+	std::fill_n(row.begin(), mappings_.numMirnas(), -mirna_weight_);
+
+	status = CPXnewcols(env_, lp_, nvar, &row[0], nullptr, nullptr, &ctype[0], nullptr);
 	handleCPLEXError_(status);
 }
 
