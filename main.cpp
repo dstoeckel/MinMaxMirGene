@@ -149,6 +149,8 @@ int maxGeneCurve(int argc, char* argv[], TargetMappings& mappings)
 	MaxGeneProblem problem(mappings, 0);
 	printILPStatistics(problem);
 
+	curve << "0\t0\n";
+
 	std::size_t i = 1;
 	for(; i <= mappings.numMirnas(); ++i) {
 		std::cout << "\rProcessing " << i << "/" << mappings.numMirnas();
