@@ -66,6 +66,7 @@ void ILPProblem::createProblem_()
 	env_ = CPXopenCPLEX(&status);
 	handleCPLEXError_(status);
 
+	CPXsetintparam(env_, CPX_PARAM_PREIND, CPX_OFF);
 	lp_ = CPXcreateprob(env_, &status, "MinMax");
 	handleCPLEXError_(status);
 
@@ -112,14 +113,29 @@ void ILPProblem::createMappingConstraints_()
 	handleCPLEXError_(status);
 }
 
+bool ILPProblem::checkSolution_(const std::vector<double>& row) const
+{
+	const double tol = 1e-4;
+	for(double d : row) {
+		if(d < -tol || (d > 1.0 + tol)) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
 ILPProblem::Result ILPProblem::solve()
 {
 	int status = CPXmipopt(env_, lp_);
 	handleCPLEXError_(status);
 
 	const size_t num_variables = mappings_.numMirnas() + mappings_.numGenes();
-	std::vector<double> row(num_variables);
+	std::vector<double> row(num_variables, -1.0);
 	status = CPXgetx(env_, lp_, &row[0], 0, num_variables - 1);
+
+	assert(checkSolution_(row));
+
 	handleCPLEXError_(status);
 
 	std::vector<std::string> mirnas;

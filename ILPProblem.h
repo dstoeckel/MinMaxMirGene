@@ -50,6 +50,8 @@ class ILPProblem
 	virtual void createObjectiveFunction_() = 0;
 	virtual void createConstraints_() = 0;
 
+	virtual bool checkSolution_(const std::vector<double>& row) const;
+
 	void createMappingConstraints_();
 	void handleCPLEXError_(int status);
 };
