@@ -160,7 +160,8 @@ int maxGeneCurve(int argc, char* argv[], TargetMappings& mappings)
 
 		curve << i << '\t' << result.second.size() << '\n';
 
-		if(result.second.size() == mappings.numGenes() && i != mappings.numMirnas()) {
+		if(result.second.size() == mappings.numGenes() &&
+		   i != mappings.numMirnas()) {
 			std::cout << "\nCovered all available target genes. Exiting early.";
 			break;
 		}

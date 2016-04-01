@@ -50,7 +50,8 @@ void MinMaxProblem::createObjectiveFunction_()
 
 	std::fill_n(row.begin(), mappings_.numMirnas(), -mirna_weight_);
 
-	status = CPXnewcols(env_, lp_, nvar, &row[0], nullptr, nullptr, &ctype[0], nullptr);
+	status = CPXnewcols(env_, lp_, nvar, &row[0], nullptr, nullptr, &ctype[0],
+	                    nullptr);
 	handleCPLEXError_(status);
 }
 

@@ -47,7 +47,10 @@ void ILPProblem::handleCPLEXError_(int status)
 	}
 }
 
-ILPProblem::ILPProblem(const TargetMappings& mappings) : mappings_(mappings), env_(nullptr), lp_(nullptr) {}
+ILPProblem::ILPProblem(const TargetMappings& mappings)
+    : mappings_(mappings), env_(nullptr), lp_(nullptr)
+{
+}
 
 ILPProblem::ILPProblem(TargetMappings&& mappings)
     : mappings_(std::move(mappings)), env_(nullptr), lp_(nullptr)

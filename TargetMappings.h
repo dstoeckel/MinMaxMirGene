@@ -31,7 +31,10 @@ class TargetMapping
 
 	size_t gene() const { return gene_; }
 
-	bool operator==(const TargetMapping& t) { return mirna_ == t.mirna_ && gene_ == t.gene_; }
+	bool operator==(const TargetMapping& t)
+	{
+		return mirna_ == t.mirna_ && gene_ == t.gene_;
+	}
 
   private:
 	size_t mirna_;
